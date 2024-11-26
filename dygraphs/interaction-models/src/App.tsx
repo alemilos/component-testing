@@ -1,12 +1,27 @@
 import { SyntheticEvent, useEffect, useReducer, useState } from "react";
 import Dygraph from "dygraphs";
+import { DygraphInteraction } from "./interactions.js";
 
 const dygraphId = "graphdiv";
 
 function iModelReducer(state: any, action: any) {
   switch (action.type) {
     case "pan":
-      return { model: "pan" };
+      return {
+        model: {
+          // Reset zoom
+          dblclick: function (event, g, context) {
+            Dygraph.defaultInteractionModel.dblclick(event, g, context);
+          },
+          mousedown: function (event, g, context) {
+            DygraphInteraction.startPan(event, g, context);
+          },
+          touchend: function (event, g, context) {},
+          touchmove: function (event, g, context) {},
+          touchstart: function (event, g, context) {},
+          willDestroyContextMyself: true,
+        },
+      };
 
     case "zoomIn":
       return { model: "zoomIn" };
@@ -14,11 +29,26 @@ function iModelReducer(state: any, action: any) {
     case "zoomOut":
       return { model: "zoomOut" };
 
-    case "select":
-      return { model: "select" };
+    case "selectArea":
+      return { model: "selectArea" };
 
     case "none":
       return { model: {} }; // empty model
+
+    case "default":
+      return {
+        model: {
+          dblclick: function (event, g, context) {
+            console.log("dblclick");
+            Dygraph.defaultInteractionModel.dblclick(event, g, context);
+          },
+          mousedown: function (event, g, context) {
+            console.log("mouse down");
+            Dygraph.defaultInteractionModel.mousedown(event, g, context);
+          },
+          willDestroyContextMyself: true,
+        },
+      };
 
     default:
       throw new Error("Invalid action type");
@@ -30,7 +60,7 @@ const initialIModel = {
 };
 
 function App() {
-  const [dygraphs, setDygraphs] = useState(null);
+  const [dygraph, setDygraph] = useState<Dygraph>(null);
   const [loading, setLoading] = useState(false);
 
   const [iModel, dispatchIModel] = useReducer(iModelReducer, initialIModel);
@@ -54,8 +84,8 @@ function App() {
     setLoading(true);
 
     setTimeout(() => {
-      const dygraphInstance: Dygraph = new Dygraph(dygraphId, data, options);
-      setDygraphs(dygraphInstance);
+      const dygraphInstance = new Dygraph(dygraphId, data, options);
+      setDygraph(dygraphInstance);
 
       setLoading(false);
     }, 2000);
@@ -64,6 +94,15 @@ function App() {
   function handleSelectChange(e: any) {
     dispatchIModel({ type: e.target.value });
   }
+
+  // Recreate dygraph on interaction model change
+  useEffect(() => {
+    if (dygraph) {
+      dygraph.destroy();
+    }
+
+    setDygraph(new Dygraph(dygraphId, data, options));
+  }, [iModel]);
 
   return (
     <div className="w-screen h-screen flex flex-col gap-16 items-center justify-center">
@@ -75,10 +114,12 @@ function App() {
           onChange={handleSelectChange}
           className="px-4 py-2 bg-[#8f8f8f] rounded-md"
         >
+          <option value="none">None</option>
           <option value="pan">Pan</option>
           <option value="zoomIn">Zoom In</option>
           <option value="zoomOut">Zoom Out</option>
-          <option value="select">Select</option>
+          <option value="selectArea">Select Area</option>
+          <option value="default">Default</option>
         </select>
       </div>
 
