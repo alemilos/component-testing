@@ -1,6 +1,6 @@
-import { SyntheticEvent, useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import Dygraph from "dygraphs";
-import { DygraphInteraction } from "./interactions.js";
+import DygraphInteractionModel from "./interactions.js";
 
 const dygraphId = "graphdiv";
 
@@ -9,17 +9,23 @@ function iModelReducer(state: any, action: any) {
     case "pan":
       return {
         model: {
-          // Reset zoom
           dblclick: function (event, g, context) {
             Dygraph.defaultInteractionModel.dblclick(event, g, context);
           },
-          mousedown: function (event, g, context) {
-            DygraphInteraction.startPan(event, g, context);
+          mousedown: function mousedown(event, g, context) {
+            context.initializeMouseDown(event, g, context);
+            Dygraph.startPan(event, g, context);
           },
-          touchend: function (event, g, context) {},
-          touchmove: function (event, g, context) {},
-          touchstart: function (event, g, context) {},
-          willDestroyContextMyself: true,
+          mousemove: function mousemove(event, g, context) {
+            if (context.isPanning) {
+              Dygraph.movePan(event, g, context);
+            }
+          },
+          mouseup: function mouseup(event, g, context) {
+            if (context.isPanning) {
+              Dygraph.endPan(event, g, context);
+            }
+          },
         },
       };
 
@@ -61,6 +67,7 @@ const initialIModel = {
 
 function App() {
   const [dygraph, setDygraph] = useState<Dygraph>(null);
+  console.log(Dygraph);
   const [loading, setLoading] = useState(false);
 
   const [iModel, dispatchIModel] = useReducer(iModelReducer, initialIModel);
@@ -105,7 +112,7 @@ function App() {
   }, [iModel]);
 
   return (
-    <div className="w-screen h-screen flex flex-col gap-16 items-center justify-center">
+    <div className="w-screen h-screen flex flex-col gap-16 items-center justify-center bg-[#efefef]">
       {/* Interaction model selector */}
       <div className="flex gap-6 p-4 bg-[#1f1f1f] text-white rounded-md items-center justify-center">
         <p>Select an interaction model for dygraphs</p>
