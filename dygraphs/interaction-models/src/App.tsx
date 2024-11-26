@@ -17,17 +17,21 @@ function iModelReducer(state: any, action: any) {
     case "select":
       return { model: "select" };
 
+    case "none":
+      return { model: {} }; // empty model
+
     default:
       throw new Error("Invalid action type");
   }
 }
 
 const initialIModel = {
-  model: null,
+  model: {},
 };
 
 function App() {
   const [dygraphs, setDygraphs] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const [iModel, dispatchIModel] = useReducer(iModelReducer, initialIModel);
 
@@ -43,12 +47,18 @@ function App() {
   ];
 
   const options = {
-    interactionModel: {},
+    interactionModel: iModel.model,
   };
 
   useEffect(() => {
-    const dygraphInstance: Dygraph = new Dygraph(dygraphId, data, options);
-    setDygraphs(dygraphInstance);
+    setLoading(true);
+
+    setTimeout(() => {
+      const dygraphInstance: Dygraph = new Dygraph(dygraphId, data, options);
+      setDygraphs(dygraphInstance);
+
+      setLoading(false);
+    }, 2000);
   }, []);
 
   function handleSelectChange(e: any) {
@@ -73,6 +83,7 @@ function App() {
       </div>
 
       <div id={dygraphId}></div>
+      {loading && "Loading chart..."}
     </div>
   );
 }
