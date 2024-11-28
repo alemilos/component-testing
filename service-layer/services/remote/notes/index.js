@@ -1,5 +1,5 @@
-import add from "./add";
-import del from "./del";
-import edit from "./edit";
+import add from "./add.js";
+import del from "./del.js";
+import edit from "./edit.js";
 
 export { add, del, edit };
