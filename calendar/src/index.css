@@ -4,5 +4,98 @@
 
 /*
 Altezza slot orario nella view mensile 
-.fc-timegrid-slot 
 */
+
+/* #######################################################################
+   FULL CALENDAR CUSTOMIZATION
+####################################################################### */
+
+/* ****************** Generic Buttons **************** */
+
+.btn,
+.btn-primary {
+  font-size: 14px;
+  border: 1px solid #313638;
+  background-color: white;
+  color: #313638;
+}
+
+.btn:hover,
+.btn-primary:hover {
+  border: 1px solid #313638;
+  background-color: rgba(49, 54, 56, 0.1);
+  color: #313638;
+}
+
+.btn:active,
+.btn-primary:active {
+  border: 1px solid #313638 !important;
+  background-color: #313638 !important;
+  color: white !important;
+}
+
+.btn.active,
+.btn-primary.active {
+  border: 1px solid #313638;
+  background-color: #313638;
+  color: white;
+}
+
+.btn:disabled {
+  border: 1px solid #313638;
+  background-color: rgba(49, 54, 56, 0.1);
+  color: rgba(49, 54, 56, 0.4);
+}
+
+/* Arrow Buttons */
+
+.fc-next-button,
+.fc-prev-button {
+  border: 1px solid white;
+}
+
+.fc-next-button:hover,
+.fc-prev-button:hover {
+  border: 1px solid white;
+}
+
+/* ****************** Custom Buttons **************** */
+
+/* Set Availability Button */
+.fc-setAvailability-button {
+  border: 1px solid rgba(26, 203, 151, 0.75);
+  background-color: rgba(26, 203, 151, 0.75);
+  color: white;
+}
+.fc-setAvailability-button:hover {
+  border: 1px solid rgba(26, 203, 151, 0.25);
+  background-color: rgba(26, 203, 151, 0.25);
+  color: #1acb97;
+}
+.fc-setAvailability-button:active {
+  border: 1px solid rgba(26, 203, 151, 1) !important;
+  background-color: rgba(26, 203, 151, 1) !important;
+}
+
+/* ****************** Title **************** */
+
+.fc-header-toolbar {
+  padding: 6px;
+}
+
+.fc-toolbar-title {
+  font-size: 16px !important;
+  width: 202px; /* Allows dates like "Dec 28, 2025 – Jan 3, 2026" to fit in the container */
+}
+.fc-toolbar .fc-toolbar-chunk {
+  display: flex;
+  align-items: center;
+}
+
+.fc-toolbar-title {
+  margin-right: 20px !important; /* Adjust as needed */
+}
+
+/* TIME SLOTS */
+.fc-timegrid-slot {
+}
