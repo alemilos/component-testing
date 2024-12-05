@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Colors */
+
+  --fc-grid-color: #ced4da;
+}
+
 /*
 Altezza slot orario nella view mensile 
 */
@@ -96,6 +102,22 @@ Altezza slot orario nella view mensile
   margin-right: 20px !important; /* Adjust as needed */
 }
 
-/* TIME SLOTS */
+/* **************** Time Slots ************** */
+
 .fc-timegrid-slot {
+  height: 2em !important;
+}
+
+.fc-col-header-cell {
+  border: none !important;
+  border-bottom: 1px solid var(--fc-grid-color) !important;
+}
+
+.fc-timegrid-axis {
+  border-right: none !important;
+  border-color: var(--fc-grid-color) !important;
+}
+
+.fc-theme-bootstrap5 td {
+  border-color: var(--fc-grid-color) !important;
 }
