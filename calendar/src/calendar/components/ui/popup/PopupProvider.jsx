@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, createElement, useContext, useState } from "react";
 
 const PopupContext = createContext();
 
@@ -8,14 +8,29 @@ const PopupContext = createContext();
  * @returns
  */
 const PopupProvider = ({ children }) => {
-  function open(PopupComponent) {}
+  const [PopupComponent, setPopupComponent] = useState(null);
+  const [popupProps, setPopupProps] = useState(null);
 
-  function close() {
-    setIsOpen(false);
+  function openPopup(PopupComponent, props) {
+    setPopupComponent(() => PopupComponent);
+    setPopupProps(props);
+  }
+
+  function closePopup() {
+    setPopupComponent(null);
+    setPopupProps(null);
   }
 
   return (
-    <PopupContext.Provider value={{ close }}>{children}</PopupContext.Provider>
+    <PopupContext.Provider value={{ openPopup, closePopup }}>
+      {children}
+      {PopupComponent && (
+        <div className="popup-overlay" onClick={closePopup}>
+          <PopupComponent {...popupProps} />
+          {/* {createElement(PopupComponent, popupProps)} */}
+        </div>
+      )}
+    </PopupContext.Provider>
   );
 };
 

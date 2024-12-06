@@ -1,5 +1,6 @@
-// Provider
+// Providers
 import CalendarProvider, { useCalendar } from "./Provider";
+import PopupProvider, { usePopup } from "./components/ui/popup/PopupProvider";
 
 /* ############################ FULL CALENDAR ##################### */
 import FullCalendar from "@fullcalendar/react";
@@ -12,10 +13,19 @@ import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 // Bootstrap styles
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-icons/font/bootstrap-icons.css"; // needs additional webpack config!
+import { useEffect } from "react";
 /* ############################ FULL CALENDAR ##################### */
 
+// Popups
+import CustomizeEventPopup from "./components/popups/CustomizeEvent";
+
 const CalendarConsumer = () => {
-  const {} = useCalendar();
+  const { dispatch } = useCalendar();
+  const { openPopup } = usePopup();
+
+  useEffect(() => {
+    openPopup(CustomizeEventPopup);
+  }, []);
 
   const events = [];
 
@@ -78,7 +88,9 @@ const CalendarConsumer = () => {
 const Calendar = () => {
   return (
     <CalendarProvider>
-      <CalendarConsumer />
+      <PopupProvider>
+        <CalendarConsumer />
+      </PopupProvider>
     </CalendarProvider>
   );
 };

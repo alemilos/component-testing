@@ -12,6 +12,7 @@ function reducer(state, action) {}
 
 const initialStore = {
   events: [],
+  availability: [],
 };
 
 /**

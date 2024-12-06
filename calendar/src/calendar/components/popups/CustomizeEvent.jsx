@@ -5,7 +5,7 @@ import React from "react";
  * @returns
  */
 const CustomizeEventPopup = () => {
-  return <div>Customize Event Popup</div>;
+  return <div className="bg-[red]">Customize Event Popup</div>;
 };
 
 export default CustomizeEventPopup;
