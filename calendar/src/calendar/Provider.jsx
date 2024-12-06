@@ -1,4 +1,10 @@
-import { createContext, useContext, useReducer, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import { useBackend } from "./useBackend";
 
 const CalendarContext = createContext();
@@ -8,9 +14,16 @@ const CalendarContext = createContext();
  * @param {*} state
  * @param {*} action
  */
-function reducer(state, action) {}
+function reducer(state, action) {
+  switch (action.type) {
+    case "start_fetch":
+      console.log("finished fetching");
+      break;
+  }
+}
 
 const initialStore = {
+  loading: false,
   events: [],
   availability: [],
 };
@@ -25,8 +38,32 @@ const CalendarProvider = ({ children }) => {
 
   const [store, dispatch] = useReducer(reducer, initialStore);
 
+  // On component mount: Fetch events
+  useEffect(() => {
+    async function fetchEventsOnMount() {
+      const events = await services.get();
+      dispatch({ type: "start_fetch", payload: events });
+    }
+
+    fetchEventsOnMount();
+
+    return () => {};
+  }, []);
+
+  async function syncWithGoogle() {
+    await services.google();
+  }
+
+  async function syncWithApple() {
+    await services.apple();
+  }
+
   return (
-    <CalendarContext.Provider value={{}}>{children}</CalendarContext.Provider>
+    <CalendarContext.Provider
+      value={{ calendarStore: store, syncWithGoogle, syncWithApple }}
+    >
+      {children}
+    </CalendarContext.Provider>
   );
 };
 

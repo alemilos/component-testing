@@ -1,4 +1,4 @@
-import { createContext, createElement, useContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 const PopupContext = createContext();
 
@@ -8,26 +8,32 @@ const PopupContext = createContext();
  * @returns
  */
 const PopupProvider = ({ children }) => {
-  const [PopupComponent, setPopupComponent] = useState(null);
-  const [popupProps, setPopupProps] = useState(null);
+  const [popup, setPopup] = useState(null);
 
-  function openPopup(PopupComponent, props) {
-    setPopupComponent(() => PopupComponent);
-    setPopupProps(props);
+  /**
+   * Open the PopupComponent passed in.
+   * Props and onClose parameters are not mandatory.
+   * @param {*} PopupComponent The Functional React Component
+   * @param {*} props Props to be passed in PopupComponent (default: {})
+   * @param {*} onClose A function to call when popup is closed (default: () => {})
+   */
+  function openPopup(PopupComponent, { props = {}, onClose = () => {} } = {}) {
+    setPopup({ PopupComponent, onClose, props });
   }
 
   function closePopup() {
-    setPopupComponent(null);
-    setPopupProps(null);
+    popup.onClose();
+    setPopup(null);
   }
 
   return (
     <PopupContext.Provider value={{ openPopup, closePopup }}>
       {children}
-      {PopupComponent && (
+      {popup?.PopupComponent && (
         <div className="popup-overlay" onClick={closePopup}>
-          <PopupComponent {...popupProps} />
-          {/* {createElement(PopupComponent, popupProps)} */}
+          <div onClick={(e) => e.stopPropagation()}>
+            <popup.PopupComponent {...popup.props} />
+          </div>
         </div>
       )}
     </PopupContext.Provider>

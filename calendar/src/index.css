@@ -105,7 +105,7 @@ Altezza slot orario nella view mensile
 /* **************** Time Slots ************** */
 
 .fc-timegrid-slot {
-  height: 2em !important;
+  height: 2.5em !important;
 }
 
 .fc-col-header-cell {
@@ -120,4 +120,13 @@ Altezza slot orario nella view mensile
 
 .fc-theme-bootstrap5 td {
   border-color: var(--fc-grid-color) !important;
+}
+
+/* Highlight when selecting event on calendar */
+.fc-highlight {
+  background-color: rgba(49, 54, 56, 0.25) !important;
+}
+
+#calendar-main[setting-availability="true"] .fc-highlight {
+  background-color: rgba(26, 203, 151, 0.25) !important;
 }

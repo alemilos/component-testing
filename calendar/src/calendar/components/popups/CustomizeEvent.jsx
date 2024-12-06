@@ -1,11 +1,19 @@
 import React from "react";
+import { usePopup } from "../ui/popup/PopupProvider";
 
 /**
- * Should be used when adding a new evernt or when editing an existing one.
+ * Should be used when adding a new event or when editing an existing one.
  * @returns
  */
 const CustomizeEventPopup = () => {
-  return <div className="bg-[red]">Customize Event Popup</div>;
+  const { closePopup } = usePopup();
+
+  return (
+    <div className="bg-[red]">
+      Customize Event Popup
+      <button onClick={closePopup}>chiudimi</button>
+    </div>
+  );
 };
 
 export default CustomizeEventPopup;
