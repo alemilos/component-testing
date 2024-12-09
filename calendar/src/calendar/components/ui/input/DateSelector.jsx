@@ -11,6 +11,10 @@ const DateSelector = ({ onChange }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
+        sx={{
+          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+            { border: "1px solid #313638" }, // at focused state
+        }}
         slotProps={{
           // Edit the style when calendar is opened
           day: {

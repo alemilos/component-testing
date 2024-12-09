@@ -53,7 +53,7 @@ const HourSelector = () => {
   ];
 
   return (
-    <select className="bg-white border px-3 rounded-md">
+    <select className="bg-white border px-3 rounded-md cursor-pointer">
       <option value="default"></option>
       {times.map((time, index) => (
         <option key={index} value={time}>
