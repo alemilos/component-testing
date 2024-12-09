@@ -126,7 +126,3 @@ Altezza slot orario nella view mensile
 .fc-highlight {
   background-color: rgba(49, 54, 56, 0.25) !important;
 }
-
-#calendar-main[setting-availability="true"] .fc-highlight {
-  background-color: rgba(26, 203, 151, 0.25) !important;
-}

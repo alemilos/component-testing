@@ -13,15 +13,15 @@ import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 // Bootstrap styles
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-icons/font/bootstrap-icons.css"; // needs additional webpack config!
-import { useEffect, useReducer, useRef } from "react";
+import { useRef } from "react";
 /* ############################ FULL CALENDAR ##################### */
 
 import "./index.css";
 
 // Popups
 import CustomizeEventPopup from "./components/popups/CustomizeEvent";
-import ConnectCalendarPopup from "./components/popups/ConnectCalendarPopup";
-import AvailabilitySettingsPopup from "./components/popups/AvailabilitySettingsPopup";
+import ConnectCalendarPopup from "./components/popups/coach/ConnectCalendarPopup";
+import AvailabilitySettingsPopup from "./components/popups/coach/AvailabilitySettingsPopup";
 
 const CalendarConsumer = () => {
   const { dispatch } = useCalendar();
@@ -44,10 +44,7 @@ const CalendarConsumer = () => {
   }
 
   function onSetAvailabilityClick() {
-    console.log(fullCalendarRef.current.hasAttribute("setting-availability"));
-    if (!fullCalendarRef.current.hasAttribute("setting-availability")) {
-      fullCalendarRef.current.setAttribute("setting-availability", "true");
-    } else fullCalendarRef.current.removeAttribute("setting-availability");
+    openPopup(AvailabilitySettingsPopup);
   }
 
   const fullCalendarRef = useRef(null);

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { usePopup } from "../ui/popup/PopupProvider";
+import { usePopup } from "../../ui/popup/PopupProvider";
 
 import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa";
-import { useCalendar } from "../../Provider";
+import { useCalendar } from "../../../Provider";
 
 const ConnectCalendarPopup = () => {
   const [loading, setLoading] = useState(false);
