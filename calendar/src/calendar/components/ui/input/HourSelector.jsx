@@ -1,6 +1,18 @@
 import React from "react";
 
-const HourSelector = () => {
+function formatTime(date) {
+  if (!date || !(date instanceof Date)) return null;
+
+  let hour = date.getHours();
+  let min = date.getMinutes();
+
+  if (hour < 10) hour = "0" + hour;
+  if (min < 10) min = "0" + min;
+
+  return `${hour}:${min}`;
+}
+
+const HourSelector = ({ date, onChange }) => {
   const times = [
     "00:00",
     "00:30",
@@ -52,9 +64,11 @@ const HourSelector = () => {
     "23:30",
   ];
 
+  const time = formatTime(date);
+
   return (
-    <select className="bg-white border px-3 rounded-md cursor-pointer">
-      <option value="default"></option>
+    <select className="bg-white border p-3 rounded-[12px] cursor-pointer">
+      <option value={time ? time : "default"}>{time ? time : ""}</option>
       {times.map((time, index) => (
         <option key={index} value={time}>
           {time}

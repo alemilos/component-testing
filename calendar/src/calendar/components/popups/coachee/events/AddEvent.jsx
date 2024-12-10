@@ -1,6 +1,6 @@
 import React from "react";
 
-const AddEvent = () => {
+const AddEvent = ({ selectionInfo }) => {
   return <div>AddEvent</div>;
 };
 

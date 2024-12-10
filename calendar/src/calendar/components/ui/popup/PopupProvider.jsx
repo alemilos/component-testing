@@ -18,7 +18,6 @@ const PopupProvider = ({ children }) => {
    * @param {*} onClose A function to call when popup is closed (default: () => {})
    */
   function openPopup(PopupComponent, { props = {}, onClose = () => {} } = {}) {
-    console.log(props);
     setPopup({ PopupComponent, onClose, props });
   }
 
