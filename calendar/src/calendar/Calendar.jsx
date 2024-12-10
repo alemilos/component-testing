@@ -4,6 +4,7 @@ import PopupProvider, { usePopup } from "./components/ui/popup/PopupProvider";
 
 /* ############################ FULL CALENDAR ##################### */
 import FullCalendar from "@fullcalendar/react";
+
 // Plugins
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -13,51 +14,64 @@ import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 // Bootstrap styles
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-icons/font/bootstrap-icons.css"; // needs additional webpack config!
-import { useRef } from "react";
 /* ############################ FULL CALENDAR ##################### */
 
 import "./index.css";
 
 // Popups
-import CustomizeEventPopup from "./components/popups/CustomizeEvent";
 import ConnectCalendarPopup from "./components/popups/coach/ConnectCalendarPopup";
-import AvailabilitySettingsPopup from "./components/popups/coach/AvailabilitySettingsPopup";
+import { default as AddCoachEvent } from "./components/popups/coach/events/AddEvent";
+import { default as AddCoacheeEvent } from "./components/popups/coachee/events/AddEvent";
 
 const CalendarConsumer = () => {
-  const { dispatch } = useCalendar();
+  const { user, calendarStore, dispatch } = useCalendar();
   const { openPopup } = usePopup();
 
-  const events = [];
+  /* 
+    #################################################
+     Setup differencies between coach and coachee view 
+    #################################################
+  */
+
+  let headerToolbar = {};
+  if (user === "coach") {
+    headerToolbar.start =
+      "today prev,next title dayGridMonth,timeGridWeek,timeGridDay connectCalendars";
+  } else if (user === "coachee") {
+    headerToolbar.start =
+      "today prev,next title dayGridMonth,timeGridWeek,timeGridDay";
+  }
+
+  /* 
+    #################################################
+      Setup calendar callbacks
+    #################################################
+  */
 
   function onEventDrop() {}
   function onEventResize() {}
 
   function onSelect(selectionInfo) {
-    console.log(selectionInfo);
+    if (user === "coach") {
+      openPopup(AddCoachEvent, { props: { selectionInfo } });
+    } else if (user === "coachee") {
+      openPopup(AddCoacheeEvent, { props: { selectionInfo } });
+    }
   }
 
   /**
-   * Calendar Button Click Handlers
+   #################################
+   Calendar Button Click Handlers
+   #################################
    */
+
   function onConnectCalendarsClick() {
     openPopup(ConnectCalendarPopup);
   }
-
-  function onSetAvailabilityClick() {
-    openPopup(AvailabilitySettingsPopup);
-  }
-
-  const fullCalendarRef = useRef(null);
-
   return (
-    <div id="calendar-main" ref={fullCalendarRef}>
+    <div id="calendar-main">
       <div className="w-screen h-screen bg-[#1f1f1f] p-8">
-        <div
-          // onContextMenu={(e) => {
-          //   e.preventDefault();
-          // }}
-          className="bg-white rounded-lg p-2"
-        >
+        <div className="bg-white rounded-lg p-2">
           <FullCalendar
             plugins={[
               dayGridPlugin,
@@ -78,19 +92,12 @@ const CalendarConsumer = () => {
                 hint: "Sync with google or apple calendars",
                 click: onConnectCalendarsClick,
               },
-
-              setAvailability: {
-                text: "Set my availability",
-                hint: "Block specific timeslots",
-                click: onSetAvailabilityClick,
-              },
             }}
             headerToolbar={{
-              start:
-                "today prev,next title dayGridMonth,timeGridWeek,timeGridDay connectCalendars setAvailability",
+              start: headerToolbar.start,
               end: "",
             }}
-            events={events}
+            events={[]}
             height="90vh"
           />
         </div>
@@ -99,9 +106,9 @@ const CalendarConsumer = () => {
   );
 };
 
-const Calendar = () => {
+const Calendar = ({ user }) => {
   return (
-    <CalendarProvider>
+    <CalendarProvider user={user}>
       <PopupProvider>
         <CalendarConsumer />
       </PopupProvider>

@@ -33,7 +33,10 @@ const initialStore = {
  * @param {*} param0
  * @returns
  */
-const CalendarProvider = ({ children }) => {
+const CalendarProvider = ({ children, user }) => {
+  if (!["coach", "coachee"].includes(user))
+    throw new Error("user must be 'coach' or 'coachee'");
+
   const { services } = useBackend();
 
   const [store, dispatch] = useReducer(reducer, initialStore);
@@ -60,7 +63,7 @@ const CalendarProvider = ({ children }) => {
 
   return (
     <CalendarContext.Provider
-      value={{ calendarStore: store, syncWithGoogle, syncWithApple }}
+      value={{ user, calendarStore: store, syncWithGoogle, syncWithApple }}
     >
       {children}
     </CalendarContext.Provider>
