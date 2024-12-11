@@ -38,6 +38,6 @@ function simulator(something) {
   return new Promise((res, rej) => {
     setTimeout(() => {
       res(something);
-    }, 2000);
+    }, 1000);
   });
 }

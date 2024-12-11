@@ -1,24 +1,29 @@
 import React from "react";
-import { useCalendar } from "../../../../Provider";
+import { v4 as uuidv4 } from "uuid";
 
 // Icons
-import { IoMdClose } from "react-icons/io";
-import { PiWarningFill } from "react-icons/pi";
 import { GoClock } from "react-icons/go";
 import { FaRegCalendar } from "react-icons/fa";
 
 // Components
 import HourSelector from "../../../ui/input/HourSelector";
+import EventInThePast from "../../shared/events/EventInThePast";
+
+// Hooks
 import { usePopup } from "../../../ui/popup/PopupProvider";
+import { eventTypes, useCalendar } from "../../../../Provider";
 
 const AddEvent = ({ selectionInfo }) => {
-  const {} = useCalendar();
+  const { dispatch, addEventService } = useCalendar();
   const { closePopup } = usePopup();
 
   const { start, end } = selectionInfo;
 
   // 1. Check start event is in the future
-  if (!(start > Date.now())) return <EventInThePast />;
+  if (!(start > Date.now()))
+    return (
+      <EventInThePast text="Slots in the past are not allowed to be blocked" />
+    );
 
   const months = [
     "Jan",
@@ -35,7 +40,28 @@ const AddEvent = ({ selectionInfo }) => {
     "Dec",
   ];
 
-  function onSaveClick() {}
+  async function onSaveClick() {
+    const event = {
+      id: uuidv4(),
+      start,
+      end,
+      title: "Blocked",
+      type: eventTypes.BLOCKING,
+    };
+
+    // send to backend
+    const res = await addEventService(event);
+    console.log("res: ", res);
+
+    console.error("TODO: Updated values are not used to change date");
+    // Add to UI
+    dispatch({
+      type: "ADD_EVENT",
+      payload: event,
+    });
+
+    closePopup();
+  }
 
   function onStartHourChange() {}
 
@@ -88,22 +114,3 @@ const AddEvent = ({ selectionInfo }) => {
 };
 
 export default AddEvent;
-
-const EventInThePast = () => {
-  const { closePopup } = usePopup();
-
-  return (
-    <div className="bg-white rounded-lg pl-6 pr-2 pt-2 pb-4 flex flex-col gap-2">
-      <IoMdClose
-        className="text-xl self-end cursor-pointer"
-        onClick={closePopup}
-      />
-      <div className="flex gap-4 items-center justify-center pr-10">
-        <PiWarningFill className="text-2xl " />
-        <p className="w-72 font-bold">
-          Slots in the past are not allowed to be blocked
-        </p>
-      </div>
-    </div>
-  );
-};

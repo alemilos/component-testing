@@ -8,19 +8,19 @@ import { useCalendar } from "../../../Provider";
 const ConnectCalendarPopup = () => {
   const [loading, setLoading] = useState(false);
 
-  const { syncWithGoogle, syncWithApple } = useCalendar();
+  const { syncWithGoogleService, syncWithAppleService } = useCalendar();
 
   async function handleGoogleClick() {
     if (confirm("Want to sync with google calendar ?")) {
       setLoading(true);
-      await syncWithGoogle();
+      await syncWithGoogleService();
       setLoading(false);
     }
   }
   async function handleAppleClick() {
     if (confirm("Want to sync with apple calendar ?")) {
       setLoading(true);
-      await syncWithApple();
+      await syncWithAppleService();
       setLoading(false);
     }
   }

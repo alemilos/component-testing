@@ -18,14 +18,18 @@ import "bootstrap-icons/font/bootstrap-icons.css"; // needs additional webpack c
 
 import "./index.css";
 
-// Popups
+// Popups (coach)
 import ConnectCalendarPopup from "./components/popups/coach/ConnectCalendarPopup";
-import { default as AddCoachEvent } from "./components/popups/coach/events/AddEvent";
-import { default as AddCoacheeEvent } from "./components/popups/coachee/events/AddEvent";
+import { default as AddCoachEventPopup } from "./components/popups/coach/events/AddEvent";
+import { default as ClickedEventPopup } from "./components/popups/coach/events/ClickedEvent";
+
+// Popups (coachee)
+import { default as AddCoacheeEventPopup } from "./components/popups/coachee/events/AddEvent";
 
 const CalendarConsumer = () => {
   const { user, calendarStore, dispatch } = useCalendar();
   const { openPopup } = usePopup();
+  console.log(calendarStore);
 
   /* 
     #################################################
@@ -53,10 +57,14 @@ const CalendarConsumer = () => {
 
   function onSelect(selectionInfo) {
     if (user === "coach") {
-      openPopup(AddCoachEvent, { props: { selectionInfo } });
+      openPopup(AddCoachEventPopup, { props: { selectionInfo } });
     } else if (user === "coachee") {
-      openPopup(AddCoacheeEvent, { props: { selectionInfo } });
+      openPopup(AddCoacheeEventPopup, { props: { selectionInfo } });
     }
+  }
+
+  function onEventClick(eventClickInfo) {
+    openPopup(ClickedEventPopup, { props: { eventClickInfo } });
   }
 
   /**
@@ -82,6 +90,7 @@ const CalendarConsumer = () => {
             editable={true}
             eventDrop={onEventDrop}
             eventResize={onEventResize}
+            eventClick={onEventClick}
             initialView="dayGridMonth"
             themeSystem="bootstrap5"
             select={onSelect}
@@ -97,7 +106,7 @@ const CalendarConsumer = () => {
               start: headerToolbar.start,
               end: "",
             }}
-            events={[]}
+            events={calendarStore.events}
             height="90vh"
           />
         </div>
