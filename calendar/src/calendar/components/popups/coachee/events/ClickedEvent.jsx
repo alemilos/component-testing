@@ -1,6 +1,7 @@
 import React from "react";
 import { usePopup } from "../../../ui/popup/PopupProvider";
 import { useCalendar } from "../../../../Provider";
+
 import SubmitButton from "../../../ui/button/SubmitButton";
 
 const ClickedEvent = ({ eventClickInfo }) => {
@@ -27,7 +28,7 @@ const ClickedEvent = ({ eventClickInfo }) => {
       {/* Header */}
       <div className="p-3 font-bold flex border-b">
         <p className="text-[24px] text-left">
-          Are you sure you want to unblock this timeslot ?
+          Are you sure you want to cancel this appointment?
         </p>
       </div>
       {/* Content */}

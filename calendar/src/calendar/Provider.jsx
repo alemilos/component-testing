@@ -20,6 +20,17 @@ function reducer(state, action) {
       console.log("finished fetching");
       return state;
 
+    case "LOADING_START":
+      return {
+        ...state,
+        loading: true,
+      };
+    case "LOADING_END":
+      return {
+        ...state,
+        loading: false,
+      };
+
     case "ADD_EVENT":
       if (!action.payload?.type)
         throw new Error("Event Type must be specified");
@@ -86,19 +97,27 @@ const CalendarProvider = ({ children, user }) => {
  */
 
   async function syncWithGoogleService() {
+    dispatch({ type: "LOADING_START" });
     await services.google();
+    dispatch({ type: "LOADING_END" });
   }
 
   async function syncWithAppleService() {
+    dispatch({ type: "LOADING_START" });
     await services.apple();
+    dispatch({ type: "LOADING_END" });
   }
 
   async function addEventService(event) {
+    dispatch({ type: "LOADING_START" });
     await services.post(event);
+    dispatch({ type: "LOADING_END" });
   }
 
   async function delEventService(eventId) {
+    dispatch({ type: "LOADING_START" });
     await services.post(eventId);
+    dispatch({ type: "LOADING_END" });
   }
 
   return (
@@ -107,7 +126,7 @@ const CalendarProvider = ({ children, user }) => {
         user,
         // Reducer state
         calendarStore: store,
-        dispatch,
+        calendarDispatch: dispatch,
         // Services
         syncWithGoogleService,
         syncWithAppleService,

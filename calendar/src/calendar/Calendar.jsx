@@ -1,3 +1,5 @@
+import { useRef } from "react";
+
 // Providers
 import CalendarProvider, { useCalendar } from "./Provider";
 import PopupProvider, { usePopup } from "./components/ui/popup/PopupProvider";
@@ -19,16 +21,19 @@ import "bootstrap-icons/font/bootstrap-icons.css"; // needs additional webpack c
 import "./index.css";
 
 // Popups (coach)
-import ConnectCalendarPopup from "./components/popups/coach/ConnectCalendarPopup";
 import { default as AddCoachEventPopup } from "./components/popups/coach/events/AddEvent";
-import { default as ClickedEventPopup } from "./components/popups/coach/events/ClickedEvent";
+import { default as ClickedCoachEventPopup } from "./components/popups/coach/events/ClickedEvent";
 
 // Popups (coachee)
 import { default as AddCoacheeEventPopup } from "./components/popups/coachee/events/AddEvent";
+import { default as ClickedCoacheeEventPopup } from "./components/popups/coachee/events/ClickedEvent";
+
+import CalendarHeader from "./components/header/CalendarHeader";
 
 const CalendarConsumer = () => {
-  const { user, calendarStore, dispatch } = useCalendar();
+  const { user, calendarStore, calendarDispatch } = useCalendar();
   const { openPopup } = usePopup();
+  const calendarRef = useRef();
   console.log(calendarStore);
 
   /* 
@@ -64,23 +69,20 @@ const CalendarConsumer = () => {
   }
 
   function onEventClick(eventClickInfo) {
-    openPopup(ClickedEventPopup, { props: { eventClickInfo } });
+    if (user === "coach") {
+      openPopup(ClickedCoachEventPopup, { props: { eventClickInfo } });
+    } else if (user === "coachee") {
+      openPopup(ClickedCoacheeEventPopup, { props: { eventClickInfo } });
+    }
   }
 
-  /**
-   #################################
-   Calendar Button Click Handlers
-   #################################
-   */
-
-  function onConnectCalendarsClick() {
-    openPopup(ConnectCalendarPopup);
-  }
   return (
     <div id="calendar-main">
       <div className="w-screen h-screen bg-[#1f1f1f] p-8">
         <div className="bg-white rounded-lg p-2">
+          <CalendarHeader calendarRef={calendarRef} />
           <FullCalendar
+            ref={calendarRef}
             plugins={[
               dayGridPlugin,
               timeGridPlugin,
@@ -95,17 +97,7 @@ const CalendarConsumer = () => {
             themeSystem="bootstrap5"
             select={onSelect}
             selectable={true}
-            customButtons={{
-              connectCalendars: {
-                text: "Connect a calendar",
-                hint: "Sync with google or apple calendars",
-                click: onConnectCalendarsClick,
-              },
-            }}
-            headerToolbar={{
-              start: headerToolbar.start,
-              end: "",
-            }}
+            headerToolbar={false}
             events={calendarStore.events}
             height="90vh"
           />

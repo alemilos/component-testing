@@ -24,6 +24,7 @@ Altezza slot orario nella view mensile
   border: 1px solid #313638;
   background-color: white;
   color: #313638;
+  border-radius: 12px;
 }
 
 .btn:hover,
@@ -31,6 +32,14 @@ Altezza slot orario nella view mensile
   border: 1px solid #313638;
   background-color: rgba(49, 54, 56, 0.1);
   color: #313638;
+}
+
+.btn:focus,
+.btn-primary:focus {
+  background-color: #313638;
+  outline: none;
+  border: 1px solid white;
+  color: white;
 }
 
 .btn:active,
@@ -58,6 +67,15 @@ Altezza slot orario nella view mensile
 .fc-next-button,
 .fc-prev-button {
   border: 1px solid white;
+}
+
+.fc-next-button {
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+.fc-prev-button {
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
 }
 
 .fc-next-button:hover,
@@ -125,4 +143,20 @@ Altezza slot orario nella view mensile
 /* Highlight when selecting event on calendar */
 .fc-highlight {
   background-color: rgba(49, 54, 56, 0.25) !important;
+}
+
+/**
+************************** Custom Components *************************
+*/
+
+#weekMonthDay-select {
+  border-radius: 12px;
+  border: 1px solid #313638 !important;
+  transition: all 0.3s ease;
+}
+
+#weekMonthDay-select:hover {
+  background-color: rgba(49, 54, 56, 0.1);
+  color: #313638;
+  transition: all 0.1s ease;
 }

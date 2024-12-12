@@ -8,13 +8,15 @@ import { FaRegCalendar } from "react-icons/fa";
 // Components
 import HourSelector from "../../../ui/input/HourSelector";
 import EventInThePast from "../../shared/events/EventInThePast";
+import SubmitButton from "../../../ui/button/SubmitButton";
 
 // Hooks
 import { usePopup } from "../../../ui/popup/PopupProvider";
 import { eventTypes, useCalendar } from "../../../../Provider";
+import { utils } from "../../../../utils";
 
 const AddEvent = ({ selectionInfo }) => {
-  const { dispatch, addEventService } = useCalendar();
+  const { calendarStore, calendarDispatch, addEventService } = useCalendar();
   const { closePopup } = usePopup();
 
   const { start, end } = selectionInfo;
@@ -24,21 +26,6 @@ const AddEvent = ({ selectionInfo }) => {
     return (
       <EventInThePast text="Slots in the past are not allowed to be blocked" />
     );
-
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
 
   async function onSaveClick() {
     const event = {
@@ -55,7 +42,7 @@ const AddEvent = ({ selectionInfo }) => {
 
     console.error("TODO: Updated values are not used to change date");
     // Add to UI
-    dispatch({
+    calendarDispatch({
       type: "ADD_EVENT",
       payload: event,
     });
@@ -83,7 +70,7 @@ const AddEvent = ({ selectionInfo }) => {
           <div className="flex gap-2 items-center">
             <FaRegCalendar className="text-xl text-[#979797]" />
             <p className="text-[#979797]">{`${start.getDate()} ${
-              months[start.getMonth()]
+              utils.monthsShort[start.getMonth()]
             } ${start.getFullYear()}`}</p>
           </div>
           <div className="flex gap-2 items-center">
@@ -101,12 +88,11 @@ const AddEvent = ({ selectionInfo }) => {
           >
             Cancel
           </button>
-          <button
+          <SubmitButton
             onClick={onSaveClick}
-            className="py-2 w-20 rounded-[12px] bg-[#1acb97] text-white"
-          >
-            Save
-          </button>
+            text="Save"
+            loading={calendarStore.loading}
+          />
         </div>
       </div>
     </div>
