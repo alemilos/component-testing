@@ -1,11 +1,11 @@
 import React from "react";
-import { usePopup } from "../../../ui/popup/PopupProvider";
-import { useCalendar } from "../../../../Provider";
-
-import SubmitButton from "../../../ui/button/SubmitButton";
+import { usePopup } from "../../ui/popup/PopupProvider";
+import { useCalendar } from "../../../Provider";
+import SubmitButton from "../../ui/button/SubmitButton";
 
 const ClickedEvent = ({ eventClickInfo }) => {
-  const { calendarStore, calendarDispatch, delEventService } = useCalendar();
+  const { user, calendarStore, calendarDispatch, delEventService } =
+    useCalendar();
   const { closePopup } = usePopup();
   const event = eventClickInfo.event;
 
@@ -23,13 +23,19 @@ const ClickedEvent = ({ eventClickInfo }) => {
     closePopup();
   }
 
+  // Text management
+  let titleText;
+  if (user === "coach") {
+    titleText = "Are you sure you want to unblock this timeslot?";
+  } else if (user === "coachee") {
+    titleText = "Are you sure you want to delete your booking?";
+  }
+
   return (
     <div className="bg-white rounded-lg py-2 pb-4 px-[36px] w-[580px] max-h-[500px] overflow-scroll text-lg">
       {/* Header */}
       <div className="p-3 font-bold flex border-b">
-        <p className="text-[24px] text-left">
-          Are you sure you want to cancel this appointment?
-        </p>
+        <p className="text-[24px] text-left">{titleText}</p>
       </div>
       {/* Content */}
       <div className="flex flex-col gap-2">

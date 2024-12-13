@@ -9,6 +9,7 @@ import FullCalendar from "@fullcalendar/react";
 
 // Plugins
 import dayGridPlugin from "@fullcalendar/daygrid";
+import rrulePlugin from "@fullcalendar/rrule";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import bootstrap5Plugin from "@fullcalendar/bootstrap5";
@@ -21,12 +22,9 @@ import "bootstrap-icons/font/bootstrap-icons.css"; // needs additional webpack c
 import "./index.css";
 
 // Popups (coach)
-import { default as AddCoachEventPopup } from "./components/popups/coach/events/AddEvent";
-import { default as ClickedCoachEventPopup } from "./components/popups/coach/events/ClickedEvent";
 
-// Popups (coachee)
-import { default as AddCoacheeEventPopup } from "./components/popups/coachee/events/AddEvent";
-import { default as ClickedCoacheeEventPopup } from "./components/popups/coachee/events/ClickedEvent";
+import { default as AddEventPopup } from "./components/popups/events/AddEvent";
+import { default as ClickedEventPopup } from "./components/popups/events/ClickedEvent";
 
 import CalendarHeader from "./components/header/CalendarHeader";
 
@@ -61,19 +59,11 @@ const CalendarConsumer = () => {
   function onEventResize() {}
 
   function onSelect(selectionInfo) {
-    if (user === "coach") {
-      openPopup(AddCoachEventPopup, { props: { selectionInfo } });
-    } else if (user === "coachee") {
-      openPopup(AddCoacheeEventPopup, { props: { selectionInfo } });
-    }
+    openPopup(AddEventPopup, { props: { selectionInfo } });
   }
 
   function onEventClick(eventClickInfo) {
-    if (user === "coach") {
-      openPopup(ClickedCoachEventPopup, { props: { eventClickInfo } });
-    } else if (user === "coachee") {
-      openPopup(ClickedCoacheeEventPopup, { props: { eventClickInfo } });
-    }
+    openPopup(ClickedEventPopup, { props: { eventClickInfo } });
   }
 
   return (
@@ -84,6 +74,7 @@ const CalendarConsumer = () => {
           <FullCalendar
             ref={calendarRef}
             plugins={[
+              rrulePlugin,
               dayGridPlugin,
               timeGridPlugin,
               interactionPlugin,
@@ -99,6 +90,12 @@ const CalendarConsumer = () => {
             selectable={true}
             headerToolbar={false}
             events={calendarStore.events}
+            eventTimeFormat={{
+              hour: "2-digit",
+              minute: "2-digit",
+              // remove hour12 to get 11:30 AM - 4:30 PM format
+              hour12: false,
+            }}
             height="90vh"
           />
         </div>
