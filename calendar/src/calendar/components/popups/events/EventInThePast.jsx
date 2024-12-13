@@ -1,7 +1,7 @@
 import { PiWarningFill } from "react-icons/pi";
 import { IoMdClose } from "react-icons/io";
-import { usePopup } from "../../../ui/popup/PopupProvider";
-import { useCalendar } from "../../../../Provider";
+import { usePopup } from "../../ui/popup/PopupProvider";
+import { useCalendar } from "../../../Provider";
 
 const EventInThePast = () => {
   const { user } = useCalendar();

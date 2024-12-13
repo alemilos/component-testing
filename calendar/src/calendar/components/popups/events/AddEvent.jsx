@@ -7,7 +7,7 @@ import { FaRegCalendar } from "react-icons/fa";
 
 // Components
 import HourSelector from "../../ui/input/HourSelector";
-import EventInThePast from "../shared/events/EventInThePast";
+import EventInThePast from "./EventInThePast";
 import SubmitButton from "../../ui/button/SubmitButton";
 
 // Hooks
