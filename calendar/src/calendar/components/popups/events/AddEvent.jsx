@@ -6,18 +6,17 @@ import { GoClock } from "react-icons/go";
 import { FaRegCalendar } from "react-icons/fa";
 
 // Components
-import HourSelector from "../../ui/input/HourSelector";
 import EventInThePast from "./EventInThePast";
 import SubmitButton from "../../ui/button/SubmitButton";
+import CSelector from "../../ui/input/CSelector";
 
 // Hooks
 import { usePopup } from "../../ui/popup/PopupProvider";
 import { eventTypes, useCalendar } from "../../../Provider";
 import { utils } from "../../../utils";
-import RecurrenceSelector from "../../ui/input/RecurrenceSelector";
 
-const AddEvent = ({ selectionInfo }) => {
-  const { start, end } = selectionInfo;
+const AddEvent = ({ event }) => {
+  const { start, end } = event;
 
   const { user, calendarStore, calendarDispatch, addEventService } =
     useCalendar();
@@ -34,14 +33,17 @@ const AddEvent = ({ selectionInfo }) => {
   async function onSaveClick() {
     // send to backend
     if (!recurrenceType || recurrenceType === "not-recurrent") {
-      addEvent();
+      await addEvent();
     } else {
-      addRecurrentEvent();
+      await addRecurrentEvent();
     }
 
     closePopup();
   }
 
+  /**
+   * Handle adding a normal event
+   */
   async function addEvent() {
     const event = {
       id: uuidv4(),
@@ -54,7 +56,7 @@ const AddEvent = ({ selectionInfo }) => {
     const res = await addEventService(event);
     console.log("res: ", res);
 
-    console.error("TODO: Updated values are not used to change date");
+    console.warn("Updated values are not used to change date");
     // Add to UI
     calendarDispatch({
       type: "ADD_EVENT",
@@ -62,11 +64,14 @@ const AddEvent = ({ selectionInfo }) => {
     });
   }
 
+  /**
+   * Handle adding a recurrent event
+   */
   async function addRecurrentEvent() {
     const recurrentEvent = {
       id: uuidv4(),
       type: eventTypes.BLOCKING,
-      recurrent: true,
+      isRecurrent: true,
       title: eventTitle,
       groupId: uuidv4(),
       startTime,
@@ -92,7 +97,7 @@ const AddEvent = ({ selectionInfo }) => {
     const res = await addEventService(recurrentEvent);
     console.log("res: ", res);
 
-    console.error("TODO: Updated values are not used to change date");
+    console.warn("Updated values are not used to change date");
     // Add to UI
     calendarDispatch({
       type: "ADD_EVENT",
@@ -105,11 +110,25 @@ const AddEvent = ({ selectionInfo }) => {
   }
 
   function onStartTimeChange(e) {
-    setStartTime(e.target.value);
+    const start_time = e.target.value;
+    setStartTime(start_time);
+
+    if (start_time > endTime) {
+      setEndTime(start_time);
+    } else if (start_time === endTime) {
+      console.warn("start time == end time, add offset to the end");
+    }
   }
 
   function onEndTimeChange(e) {
+    const end_time = e.target.value;
     setEndTime(e.target.value);
+
+    if (end_time < startTime) {
+      setStartTime(end_time);
+    } else if (end_time === startTime) {
+      console.warn("start time == end time, add offset to the start");
+    }
   }
 
   // Text management
@@ -144,16 +163,36 @@ const AddEvent = ({ selectionInfo }) => {
           </div>
           <div className="flex gap-2 items-center">
             <GoClock className="text-xl text-[#979797]" />
-            <HourSelector
-              defaultTime={startTime}
+            <CSelector
+              options={utils.hourSlots}
+              defaultValue={startTime}
               onChange={onStartTimeChange}
             />
             <p className="text-[#979797]">-</p>
-            <HourSelector defaultTime={endTime} onChange={onEndTimeChange} />
+            <CSelector
+              defaultValue={endTime}
+              onChange={onEndTimeChange}
+              options={utils.hourSlots}
+            />
           </div>
         </div>
 
-        <RecurrenceSelector onChange={onRecurrenceChange} />
+        <CSelector
+          width={200}
+          onChange={onRecurrenceChange}
+          options={[
+            "not-recurrent",
+            "all-working-day",
+            "every-week",
+            "every-month",
+          ]}
+          optionsDisplay={[
+            "Not Recurrent",
+            "Every working day",
+            "Every week",
+            "Every month",
+          ]}
+        />
 
         <div className="w-full flex gap-3 items-center justify-end mt-4">
           <button

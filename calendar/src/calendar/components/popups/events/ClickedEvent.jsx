@@ -1,26 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import { usePopup } from "../../ui/popup/PopupProvider";
 import { useCalendar } from "../../../Provider";
 import SubmitButton from "../../ui/button/SubmitButton";
+import { FaRegCalendar } from "react-icons/fa";
+import { utils } from "../../../utils";
+import { CiWarning } from "react-icons/ci";
+import CSelector from "../../ui/input/CSelector";
 
-const ClickedEvent = ({ eventClickInfo }) => {
-  const { user, calendarStore, calendarDispatch, delEventService } =
+const ClickedEvent = ({ event }) => {
+  const { start, end } = event;
+
+  const { user, calendarStore, calendarDispatch, deleteEventService } =
     useCalendar();
   const { closePopup } = usePopup();
-  const event = eventClickInfo.event;
+
+  const [deleteType, setDeleteType] = useState(null);
 
   function onCancelClick() {
     closePopup();
   }
 
-  async function onConfirmClick() {
-    const eventId = event.id;
-
-    const res = await delEventService(eventId);
+  async function deleteOne() {
+    const res = await deleteEventService(event);
     console.log(res);
-    calendarDispatch({ type: "DEL_EVENT", payload: eventId });
+    calendarDispatch({ type: "DEL_EVENT", payload: { event } });
+  }
 
+  async function deleteAll() {}
+
+  async function deleteThisAndFollowing() {}
+
+  async function onConfirmClick() {
+    if (!deleteType || deleteType === "this-event") await deleteOne();
+    else if (deleteType === "this-and-following")
+      await deleteThisAndFollowing();
+    else if (deleteType === "all") await deleteAll();
     closePopup();
+  }
+
+  function onDeleteTypeChange(e) {
+    setDeleteType(e.target.value);
   }
 
   // Text management
@@ -32,27 +51,25 @@ const ClickedEvent = ({ eventClickInfo }) => {
   }
 
   return (
-    <div className="bg-white rounded-lg py-2 pb-4 px-[36px] w-[580px] max-h-[500px] overflow-scroll text-lg">
+    <div className="bg-white rounded-lg py-2 pb-4 px-[36px] w-[580px] max-h-[500px] overflow-scroll text-lg flex flex-col gap-3">
       {/* Header */}
       <div className="p-3 font-bold flex border-b">
         <p className="text-[24px] text-left">{titleText}</p>
       </div>
       {/* Content */}
       <div className="flex flex-col gap-2">
-        {/* <div className="p-4 flex gap-2 items-center justify-around">
-    <div className="flex gap-2 items-center">
-      <FaRegCalendar className="text-xl text-[#979797]" />
-      <p className="text-[#979797]">{`${start.getDate()} ${
-        months[start.getMonth()]
-      } ${start.getFullYear()}`}</p>
-    </div>
-    <div className="flex gap-2 items-center">
-      <GoClock className="text-xl text-[#979797]" />
-      <HourSelector date={start} onChange={onStartHourChange} />
-      <p className="text-[#979797]">-</p>
-      <HourSelector date={end} onChange={onEndHourChange} />
-    </div>
-  </div> */}
+        <div className="flex flex-col gap-3">
+          <div className="flex gap-2 items-center">
+            <FaRegCalendar className="text-xl text-[#979797]" />
+            <p className="text-[#979797]">{`${start.getDate()} ${
+              utils.monthsShort[start.getMonth()]
+            } ${start.getFullYear()} (${utils.formatHoursMinutes(
+              start
+            )} - ${utils.formatHoursMinutes(end)})`}</p>
+          </div>
+
+          {event?.extendedProps?.isRecurrent && <DeleteRecurrentEvent />}
+        </div>
 
         <div className="w-full flex gap-3 items-center justify-end mt-4">
           <button
@@ -73,3 +90,25 @@ const ClickedEvent = ({ eventClickInfo }) => {
 };
 
 export default ClickedEvent;
+
+const DeleteRecurrentEvent = ({ onDeleteTypeChange }) => {
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="bg-[#1acb97]/[.1] rounded-lg flex gap-2 p-2 items-center text-[#1acb97]">
+        <CiWarning className="text-xl " />
+        <p>This is a recurrent event, select the event to delete</p>
+      </div>
+
+      <CSelector
+        width={200}
+        onChange={onDeleteTypeChange}
+        options={["this-event", "this-and-following", "all"]}
+        optionsDisplay={[
+          "This event",
+          "This and following",
+          "All recurrencies",
+        ]}
+      />
+    </div>
+  );
+};

@@ -21,18 +21,19 @@ import "bootstrap-icons/font/bootstrap-icons.css"; // needs additional webpack c
 
 import "./index.css";
 
-// Popups (coach)
-
+// Popups
 import { default as AddEventPopup } from "./components/popups/events/AddEvent";
 import { default as ClickedEventPopup } from "./components/popups/events/ClickedEvent";
+import { default as DroppedEventPopup } from "./components/popups/events/DroppedEvent";
+import { default as ResizedEventPopup } from "./components/popups/events/ResizedEvent";
 
+// Components
 import CalendarHeader from "./components/header/CalendarHeader";
 
 const CalendarConsumer = () => {
-  const { user, calendarStore, calendarDispatch } = useCalendar();
+  const { user, calendarStore } = useCalendar();
   const { openPopup } = usePopup();
   const calendarRef = useRef();
-  console.log(calendarStore);
 
   /* 
     #################################################
@@ -55,15 +56,20 @@ const CalendarConsumer = () => {
     #################################################
   */
 
-  function onEventDrop() {}
-  function onEventResize() {}
+  function onEventDrop(eventDropInfo) {
+    openPopup(DroppedEventPopup, { props: { eventDropInfo } });
+  }
+
+  function onEventResize(eventResizeInfo) {
+    openPopup(ResizedEventPopup, { props: { eventResizeInfo } });
+  }
 
   function onSelect(selectionInfo) {
-    openPopup(AddEventPopup, { props: { selectionInfo } });
+    openPopup(AddEventPopup, { props: { event: selectionInfo } });
   }
 
   function onEventClick(eventClickInfo) {
-    openPopup(ClickedEventPopup, { props: { eventClickInfo } });
+    openPopup(ClickedEventPopup, { props: { event: eventClickInfo.event } });
   }
 
   return (

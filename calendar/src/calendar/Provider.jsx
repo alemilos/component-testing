@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useReducer,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
 import { useBackend } from "./useBackend";
 
 const CalendarContext = createContext();
@@ -40,12 +34,29 @@ function reducer(state, action) {
         events: [...state.events, action.payload],
       };
 
-    case "DEL_EVENT":
-      console.log("removing event...");
+    case "EDIT_EVENT":
+      if (!action.payload?.event) throw new Error("Event must be provided");
 
       return {
         ...state,
-        events: state.events.filter((event) => event.id !== action.payload),
+        events: state.events.map((event) => {
+          // When event matches the id
+          if (event.id === action.payload.event.id) {
+            return action.payload.event;
+          }
+
+          return event;
+        }),
+      };
+
+    case "DEL_EVENT":
+      if (!action.payload?.event) throw new Error("Event must be provided");
+
+      return {
+        ...state,
+        events: state.events.filter(
+          (event) => event.id !== action.payload.event.id
+        ),
       };
 
     default:
@@ -114,9 +125,15 @@ const CalendarProvider = ({ children, user }) => {
     dispatch({ type: "LOADING_END" });
   }
 
-  async function delEventService(eventId) {
+  async function editEventService(event) {
     dispatch({ type: "LOADING_START" });
-    await services.post(eventId);
+    await services.post(event);
+    dispatch({ type: "LOADING_END" });
+  }
+
+  async function deleteEventService(event) {
+    dispatch({ type: "LOADING_START" });
+    await services.post(event);
     dispatch({ type: "LOADING_END" });
   }
 
@@ -131,7 +148,8 @@ const CalendarProvider = ({ children, user }) => {
         syncWithGoogleService,
         syncWithAppleService,
         addEventService,
-        delEventService,
+        editEventService,
+        deleteEventService,
       }}
     >
       {children}
