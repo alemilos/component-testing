@@ -99,4 +99,17 @@ export const utils = {
 
     return `${year}-${month}-${day}`;
   },
+
+  calcDuration(start, end) {
+    const [startHour, startMin] = start.split(":");
+    const [endHour, endMin] = end.split(":");
+
+    let diffHour = parseInt(endHour) - parseInt(startHour);
+    let diffMin = parseInt(endMin) - parseInt(startMin);
+
+    if (diffHour < 10) diffHour = "0" + diffHour;
+    if (diffMin < 10) diffMin = "0" + diffMin;
+
+    return `${diffHour}:${diffMin}`;
+  },
 };

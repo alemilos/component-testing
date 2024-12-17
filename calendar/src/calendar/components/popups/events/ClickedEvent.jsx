@@ -8,6 +8,7 @@ import { CiWarning } from "react-icons/ci";
 import CSelector from "../../ui/input/CSelector";
 
 const ClickedEvent = ({ event }) => {
+  console.log(event._instance.range.start);
   const { start, end } = event;
 
   const { user, calendarStore, calendarDispatch, deleteEventService } =
@@ -22,13 +23,28 @@ const ClickedEvent = ({ event }) => {
 
   async function deleteOne() {
     const res = await deleteEventService(event);
-    console.log(res);
+
+    // Todo: dispatch when res
     calendarDispatch({ type: "DEL_EVENT", payload: { event } });
   }
 
-  async function deleteAll() {}
+  async function deleteAll() {
+    const res = await deleteEventService(event);
+    // Todo: dispatch when res
+    calendarDispatch({
+      type: "DEL_REC_EVENT",
+      payload: { event, type: deleteType },
+    });
+  }
 
-  async function deleteThisAndFollowing() {}
+  async function deleteThisAndFollowing() {
+    const res = await deleteEventService(event);
+    // Todo: dispatch when res
+    calendarDispatch({
+      type: "DEL_REC_EVENT",
+      payload: { event, type: deleteType },
+    });
+  }
 
   async function onConfirmClick() {
     if (!deleteType || deleteType === "this-event") await deleteOne();
@@ -68,7 +84,9 @@ const ClickedEvent = ({ event }) => {
             )} - ${utils.formatHoursMinutes(end)})`}</p>
           </div>
 
-          {event?.extendedProps?.isRecurrent && <DeleteRecurrentEvent />}
+          {event?.extendedProps?.isRecurrent && (
+            <DeleteRecurrentEvent onDeleteTypeChange={onDeleteTypeChange} />
+          )}
         </div>
 
         <div className="w-full flex gap-3 items-center justify-end mt-4">

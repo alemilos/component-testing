@@ -70,13 +70,15 @@ const AddEvent = ({ event }) => {
   async function addRecurrentEvent() {
     const recurrentEvent = {
       id: uuidv4(),
-      type: eventTypes.BLOCKING,
-      isRecurrent: true,
       title: eventTitle,
       groupId: uuidv4(),
       startTime,
       endTime,
-      duration: "02:00",
+      duration: utils.calcDuration(startTime, endTime),
+      // extended props
+      isRecurrent: true,
+      type: eventTypes.BLOCKING,
+      firstRecurrentEventStart: start,
     };
 
     // Set recurrence on the calendar
@@ -94,10 +96,12 @@ const AddEvent = ({ event }) => {
       };
     }
 
+    // TODO: make sure the event is only added after the available date
     const res = await addEventService(recurrentEvent);
-    console.log("res: ", res);
 
+    console.log("res: ", res);
     console.warn("Updated values are not used to change date");
+
     // Add to UI
     calendarDispatch({
       type: "ADD_EVENT",

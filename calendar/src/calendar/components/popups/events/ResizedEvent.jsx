@@ -5,16 +5,21 @@ import { usePopup } from "../../ui/popup/PopupProvider";
 
 const ResizedEvent = ({ eventResizeInfo }) => {
   console.log(eventResizeInfo);
-  const { revert } = eventResizeInfo;
-  const { user, calendarStore, calendarDispatch } = useCalendar();
+  const { revert, event } = eventResizeInfo;
+  const { user, calendarStore, calendarDispatch, editEventService } =
+    useCalendar();
   const { closePopup } = usePopup();
 
   function onCancelClick() {
     revert();
     closePopup();
   }
-  function onConfirmClick() {
-    calendarDispatch({ type: "EDIT_EVENT", payload: {} });
+  async function onConfirmClick() {
+    const res = await editEventService(event);
+
+    // TODO: on res ok dispatch
+    calendarDispatch({ type: "EDIT_EVENT", payload: { event } });
+    closePopup();
   }
 
   // Text Management

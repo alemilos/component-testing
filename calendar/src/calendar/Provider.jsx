@@ -34,6 +34,9 @@ function reducer(state, action) {
         events: [...state.events, action.payload],
       };
 
+    case "ADD_REC_EVENT":
+      break;
+
     case "EDIT_EVENT":
       if (!action.payload?.event) throw new Error("Event must be provided");
 
@@ -42,12 +45,23 @@ function reducer(state, action) {
         events: state.events.map((event) => {
           // When event matches the id
           if (event.id === action.payload.event.id) {
-            return action.payload.event;
+            console.log("----------------------------");
+            console.log(event);
+            console.log(action.payload.event);
+            console.log("----------------------------");
+            return {
+              ...event,
+              start: action.payload.event.start,
+              end: action.payload.event.end,
+            };
           }
 
           return event;
         }),
       };
+
+    case "EDIT_REC_EVENT":
+      break;
 
     case "DEL_EVENT":
       if (!action.payload?.event) throw new Error("Event must be provided");
@@ -58,6 +72,32 @@ function reducer(state, action) {
           (event) => event.id !== action.payload.event.id
         ),
       };
+
+    case "DEL_REC_EVENT":
+      if (!action.payload.type)
+        throw new Error("Recurrency type must be provided");
+
+      if (action.payload.type === "all") {
+        return {
+          ...state,
+          events: [...state.events].filter(
+            // filter with same group id (all)
+            (event) => event.groupId === action.payload.groupId
+          ),
+        };
+      } else if (action.payload.type === "this-and-following") {
+        // TODO: elimino gli eventi a partire dalla data dell'evento selezionato
+        // Ricreo un evento ricorrente con le stesse proprietà dell'altro con end limit la data dell'evento selezionato.
+
+        return {
+          ...state,
+          events: [...state.events].filter(
+            (event) => event.groupId === action.payload.groupId && false
+          ),
+        };
+      } else throw new Error("Invalid recurrency type");
+
+      break;
 
     default:
       throw new Error("invalid dispatch action.type");
@@ -88,6 +128,7 @@ const CalendarProvider = ({ children, user }) => {
   const { services } = useBackend();
 
   const [store, dispatch] = useReducer(reducer, initialStore);
+  console.log(store);
 
   // On component mount: Fetch events
   useEffect(() => {
