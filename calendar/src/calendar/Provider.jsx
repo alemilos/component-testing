@@ -1,5 +1,8 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
-import { useBackend } from "./useBackend";
+
+import { coachServices } from "./services/coach";
+import { coacheeServices } from "./services/coachee";
+import { api } from "./api";
 
 const CalendarContext = createContext();
 
@@ -45,10 +48,6 @@ function reducer(state, action) {
         events: state.events.map((event) => {
           // When event matches the id
           if (event.id === action.payload.event.id) {
-            console.log("----------------------------");
-            console.log(event);
-            console.log(action.payload.event);
-            console.log("----------------------------");
             return {
               ...event,
               start: action.payload.event.start,
@@ -125,15 +124,12 @@ const CalendarProvider = ({ children, user }) => {
   if (!["coach", "coachee"].includes(user))
     throw new Error("user must be 'coach' or 'coachee'");
 
-  const { services } = useBackend();
-
   const [store, dispatch] = useReducer(reducer, initialStore);
-  console.log(store);
 
   // On component mount: Fetch events
   useEffect(() => {
     async function fetchEventsOnMount() {
-      const events = await services.get();
+      const events = await api.get();
       dispatch({ type: "INIT_FETCH", payload: events });
     }
 
@@ -141,6 +137,9 @@ const CalendarProvider = ({ children, user }) => {
 
     return () => {};
   }, []);
+
+  // Extract services for coach or for coachee
+  const services = user === "coach" ? coachServices : coacheeServices;
 
   /**
  * #############################
@@ -160,10 +159,18 @@ const CalendarProvider = ({ children, user }) => {
     dispatch({ type: "LOADING_END" });
   }
 
-  async function addEventService(event) {
+  async function addEventService(data) {
     dispatch({ type: "LOADING_START" });
-    await services.post(event);
+    const res = await services.addEvent(data);
     dispatch({ type: "LOADING_END" });
+    return res;
+  }
+
+  async function addRecurrentEventService(data) {
+    dispatch({ type: "LOADING_START" });
+    const res = await services.addRecurrentEvent(data);
+    dispatch({ type: "LOADING_END" });
+    return res;
   }
 
   async function editEventService(event) {
@@ -189,6 +196,7 @@ const CalendarProvider = ({ children, user }) => {
         syncWithGoogleService,
         syncWithAppleService,
         addEventService,
+        addRecurrentEventService,
         editEventService,
         deleteEventService,
       }}

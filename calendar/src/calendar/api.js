@@ -1,17 +1,9 @@
-/**
- * useBackend provides an interface for CalendarProvider, to connect with the backend api.
- * @returns
- */
-export function useBackend() {
-  const services = {
-    google: simulateGoogleSync,
-    apple: simulateAppleSync,
-    post: (event) => simulatePostEvent(event),
-    get: simulateGetEvents,
-  };
-
-  return { services };
-}
+export const api = {
+  google: simulateGoogleSync,
+  apple: simulateAppleSync,
+  post: (event) => simulatePostEvent(event),
+  get: simulateGetEvents,
+};
 
 async function simulateGoogleSync() {
   await simulator();
@@ -24,8 +16,8 @@ async function simulateAppleSync() {
 }
 
 async function simulatePostEvent(event) {
-  await simulator();
   console.log(event, " saved");
+  return await simulator();
 }
 
 async function simulateGetEvents() {

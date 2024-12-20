@@ -12,14 +12,20 @@ import CSelector from "../../ui/input/CSelector";
 
 // Hooks
 import { usePopup } from "../../ui/popup/PopupProvider";
-import { eventTypes, useCalendar } from "../../../Provider";
+import { useCalendar } from "../../../Provider";
 import { utils } from "../../../utils";
 
 const AddEvent = ({ event }) => {
   const { start, end } = event;
 
-  const { user, calendarStore, calendarDispatch, addEventService } =
-    useCalendar();
+  const {
+    user,
+    calendarStore,
+    calendarDispatch,
+    addEventService,
+    addRecurrentEventService,
+  } = useCalendar();
+
   const { closePopup } = usePopup();
 
   const [recurrenceType, setRecurrenceType] = useState(null);
@@ -45,22 +51,15 @@ const AddEvent = ({ event }) => {
    * Handle adding a normal event
    */
   async function addEvent() {
-    const event = {
-      id: uuidv4(),
-      start: utils.changeDateTime(start, startTime),
-      end: utils.changeDateTime(end, endTime),
-      title: eventTitle,
-      type: eventTypes.BLOCKING,
-    };
+    const timeRange = { start: startTime, end: endTime };
+    const dateRange = { start: start, end: end };
 
-    const res = await addEventService(event);
+    const res = await addEventService({ timeRange, dateRange });
     console.log("res: ", res);
-
-    console.warn("Updated values are not used to change date");
     // Add to UI
     calendarDispatch({
       type: "ADD_EVENT",
-      payload: event,
+      payload: res.event,
     });
   }
 
@@ -68,44 +67,20 @@ const AddEvent = ({ event }) => {
    * Handle adding a recurrent event
    */
   async function addRecurrentEvent() {
-    const recurrentEvent = {
-      id: uuidv4(),
-      title: eventTitle,
-      groupId: uuidv4(),
-      startTime,
-      endTime,
-      duration: utils.calcDuration(startTime, endTime),
-      // extended props
-      isRecurrent: true,
-      type: eventTypes.BLOCKING,
-      firstRecurrentEventStart: start,
-    };
-
-    // Set recurrence on the calendar
-    let daysOfWeek; // for weekly recurrence
-    if (recurrenceType === "all-working-day") {
-      daysOfWeek = [1, 2, 3, 4, 5];
-      recurrentEvent.daysOfWeek = daysOfWeek;
-    } else if (recurrenceType === "every-week") {
-      daysOfWeek = [start.getDay()]; // the same day of the week
-      recurrentEvent.daysOfWeek = daysOfWeek;
-    } else if (recurrenceType === "every-month") {
-      recurrentEvent.rrule = {
-        freq: "monthly",
-        dtstart: utils.formatYearMonthDay(start),
-      };
-    }
+    const timeRange = { start: startTime, end: endTime };
+    const dateRange = { start: start, end: end };
 
     // TODO: make sure the event is only added after the available date
-    const res = await addEventService(recurrentEvent);
-
+    const res = await addRecurrentEventService({
+      recurrenceType,
+      timeRange,
+      dateRange,
+    });
     console.log("res: ", res);
-    console.warn("Updated values are not used to change date");
-
     // Add to UI
     calendarDispatch({
       type: "ADD_EVENT",
-      payload: recurrentEvent,
+      payload: res.event,
     });
   }
 

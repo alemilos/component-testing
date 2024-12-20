@@ -79,6 +79,11 @@ export const utils = {
     "23:30",
   ],
 
+  /**
+   * Get hours minutes in the format HH:mm from a Date
+   * @param {*} date
+   * @returns
+   */
   formatHoursMinutes(date) {
     return Intl.DateTimeFormat("en-US", {
       hour: "2-digit",
@@ -87,6 +92,12 @@ export const utils = {
     }).format(date);
   },
 
+  /**
+   * Change the time in a given Date
+   * @param {*} date
+   * @param {*} time
+   * @returns
+   */
   changeDateTime(date, time) {
     const [hour, minute] = time.split(":").map(Number);
     return new Date(date.setHours(hour, minute, 0));
@@ -100,6 +111,12 @@ export const utils = {
     return `${year}-${month}-${day}`;
   },
 
+  /**
+   * Calculate duration in HH:mm between HH:mm, HH:mm formatted times
+   * @param {*} start
+   * @param {*} end
+   * @returns
+   */
   calcDuration(start, end) {
     const [startHour, startMin] = start.split(":");
     const [endHour, endMin] = end.split(":");
