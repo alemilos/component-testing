@@ -18,9 +18,9 @@ export const coachServices = {
   },
 
   addRecurrentEvent: async function (data) {
-    const { recurrenceType, timeRange, dateRange } = data;
+    const { recurrenceType, recurrenceDurationWeeks, timeRange, dateRange } =
+      data;
 
-    console.log(data);
     const event = {
       id: uuidv4(),
       title: "Blocked",
@@ -32,7 +32,6 @@ export const coachServices = {
       // extended props
       isRecurrent: true,
       type: eventTypes.BLOCKING,
-      firstRecurrentEventStart: dateRange.start,
     };
 
     // Set recurrence on the calendar
@@ -52,5 +51,9 @@ export const coachServices = {
     }
 
     return { data: await api.post(event), event };
+  },
+
+  deleteEvent: async function (data) {
+    return { data: await api.post("TEST"), event };
   },
 };

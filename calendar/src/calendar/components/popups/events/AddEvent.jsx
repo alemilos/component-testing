@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 
 // Icons
 import { GoClock } from "react-icons/go";
@@ -29,11 +28,11 @@ const AddEvent = ({ event }) => {
   const { closePopup } = usePopup();
 
   const [recurrenceType, setRecurrenceType] = useState(null);
+  const [recurrenceDurationWeeks, setRecurrenceDurationWeeks] = useState(12); // default 3 months (4 * 3 weeks)
   const [startTime, setStartTime] = useState(utils.formatHoursMinutes(start));
   const [endTime, setEndTime] = useState(utils.formatHoursMinutes(end));
 
   // Check start event is in the future
-  //
   if (!(start > Date.now())) return <EventInThePast />;
 
   async function onSaveClick() {
@@ -56,6 +55,7 @@ const AddEvent = ({ event }) => {
 
     const res = await addEventService({ timeRange, dateRange });
     console.log("res: ", res);
+
     // Add to UI
     calendarDispatch({
       type: "ADD_EVENT",
@@ -73,9 +73,11 @@ const AddEvent = ({ event }) => {
     // TODO: make sure the event is only added after the available date
     const res = await addRecurrentEventService({
       recurrenceType,
+      recurrenceDurationWeeks,
       timeRange,
       dateRange,
     });
+
     console.log("res: ", res);
     // Add to UI
     calendarDispatch({
@@ -110,6 +112,12 @@ const AddEvent = ({ event }) => {
     }
   }
 
+  function onRecurrenceDurationChange(weeks) {
+    console.log(weeks);
+    setRecurrenceDurationWeeks(weeks);
+  }
+
+  //////////////////
   // Text management
   let titleText, infoText;
   let eventTitle;
@@ -155,24 +163,29 @@ const AddEvent = ({ event }) => {
             />
           </div>
         </div>
+        <div className="flex gap-4 items-center">
+          <CSelector
+            width={200}
+            onChange={onRecurrenceChange}
+            options={[
+              "not-recurrent",
+              "all-working-day",
+              "every-week",
+              "every-month",
+            ]}
+            optionsDisplay={[
+              "Not Recurrent",
+              "Every available day",
+              "Every week",
+              "Every month",
+            ]}
+          />
 
-        <CSelector
-          width={200}
-          onChange={onRecurrenceChange}
-          options={[
-            "not-recurrent",
-            "all-working-day",
-            "every-week",
-            "every-month",
-          ]}
-          optionsDisplay={[
-            "Not Recurrent",
-            "Every working day",
-            "Every week",
-            "Every month",
-          ]}
-        />
-
+          {/* <RecurrenceDurationManager
+            recurrenceType={recurrenceType}
+            onChange={onRecurrenceDurationChange}
+          /> */}
+        </div>
         <div className="w-full flex gap-3 items-center justify-end mt-4">
           <button
             onClick={closePopup}
@@ -187,6 +200,59 @@ const AddEvent = ({ event }) => {
           />
         </div>
       </div>
+    </div>
+  );
+};
+
+const RecurrenceDurationManager = ({ recurrenceType, onChange }) => {
+  if (!recurrenceType || recurrenceType === "not-recurrent") return null;
+
+  let options, displayOptions;
+  if (recurrenceType === "every-month") {
+    options = ["months", "years"];
+    displayOptions = ["Months", "Years"];
+  } else {
+    options = ["weeks", "months", "years"];
+    displayOptions = ["Weeks", "Months", "Years"];
+  }
+
+  const [inputValue, setInputValue] = useState("");
+  const [timeUnit, setTimeUnit] = useState("weeks");
+
+  /**
+   * update the weeks count on the onChange callback when the input value changes
+   * @param {*} e
+   */
+  function handleChange(e) {
+    setInputValue(e.target.value);
+    const weeks = utils.weeksCount(e.target.value, timeUnit);
+    onChange(weeks);
+  }
+
+  /**
+   * update the weeks count on the onChange callback when time unit changes
+   * @param {*} e
+   */
+  function handleTimeUnitChange(e) {
+    setTimeUnit(e.target.value);
+    const weeks = utils.weeksCount(inputValue, e.target.value);
+    onChange(weeks);
+  }
+
+  return (
+    <div className="flex items-center gap-3 ">
+      <p className="w-full text-nowrap">for </p>
+      <input
+        onChange={handleChange}
+        type="number"
+        min={0}
+        className="border w-20 rounded-lg px-2 outline-none"
+      />
+      <CSelector
+        options={options}
+        optionsDisplay={displayOptions}
+        onChange={handleTimeUnitChange}
+      />
     </div>
   );
 };

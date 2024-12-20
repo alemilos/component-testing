@@ -82,6 +82,7 @@ function reducer(state, action) {
       if (!action.payload.type)
         throw new Error("Recurrency type must be provided");
 
+      // Delete all events with the groupId input
       if (action.payload.type === "all") {
         return {
           ...state,
@@ -90,7 +91,14 @@ function reducer(state, action) {
             (event) => event.groupId === action.payload.groupId
           ),
         };
-      } else if (action.payload.type === "this-and-following") {
+      }
+
+      if (action.payload.type === "this-event") {
+        // TODO
+        return { ...state };
+      }
+
+      if (action.payload.type === "this-and-following") {
         // TODO: elimino gli eventi a partire dalla data dell'evento selezionato
         // Ricreo un evento ricorrente con le stesse proprietà dell'altro con end limit la data dell'evento selezionato.
 
@@ -101,8 +109,6 @@ function reducer(state, action) {
           ),
         };
       } else throw new Error("Invalid recurrency type");
-
-      break;
 
     default:
       throw new Error("invalid dispatch action.type");
@@ -134,7 +140,15 @@ const CalendarProvider = ({ children, user }) => {
   const [configurations, setConfigurations] = useState({
     sessionLengths: [45, 60],
     breakTime: 15, // or 3,
-    availability: {},
+    availability: {
+      // TODO: should it be like this ?
+      // days[i] <--> hours[i]
+      days: ["monday", "tuesday"],
+      hours: [
+        ["12:30", "19:00"],
+        ["10:00", "20:00"],
+      ],
+    },
     cancelBeforeHour: 24,
   });
 
@@ -193,7 +207,7 @@ const CalendarProvider = ({ children, user }) => {
 
   async function deleteEventService(event) {
     dispatch({ type: "LOADING_START" });
-    await services.post(event);
+    await services.deleteEvent(event);
     dispatch({ type: "LOADING_END" });
   }
 

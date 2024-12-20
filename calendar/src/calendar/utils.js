@@ -129,4 +129,12 @@ export const utils = {
 
     return `${diffHour}:${diffMin}`;
   },
+
+  weeksCount(value, unit) {
+    let weeks;
+    if (unit === "weeks") weeks = value;
+    else if (unit === "months") weeks = value * 4;
+    else if (unit === "years") weeks = value * 52;
+    return weeks;
+  },
 };

@@ -22,10 +22,18 @@ const ClickedEvent = ({ event }) => {
   }
 
   async function deleteOne() {
+    console.log("DELETING");
     const res = await deleteEventService(event);
 
     // Todo: dispatch when res
-    calendarDispatch({ type: "DEL_EVENT", payload: { event } });
+    if (event.extendedProps?.isRecurrent) {
+      calendarDispatch({
+        type: "DEL_REC_EVENT",
+        payload: { event, type: "this-event" },
+      });
+    } else {
+      calendarDispatch({ type: "DEL_EVENT", payload: { event } });
+    }
   }
 
   async function deleteAll() {
@@ -84,9 +92,9 @@ const ClickedEvent = ({ event }) => {
             )} - ${utils.formatHoursMinutes(end)})`}</p>
           </div>
 
-          {event?.extendedProps?.isRecurrent && (
+          {/*  {event?.extendedProps?.isRecurrent && (
             <DeleteRecurrentEvent onDeleteTypeChange={onDeleteTypeChange} />
-          )}
+          )} */}
         </div>
 
         <div className="w-full flex gap-3 items-center justify-end mt-4">
