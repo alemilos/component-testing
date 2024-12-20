@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useReducer } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 
 import { coachServices } from "./services/coach";
 import { coacheeServices } from "./services/coachee";
@@ -125,6 +131,12 @@ const CalendarProvider = ({ children, user }) => {
     throw new Error("user must be 'coach' or 'coachee'");
 
   const [store, dispatch] = useReducer(reducer, initialStore);
+  const [configurations, setConfigurations] = useState({
+    sessionLengths: [45, 60],
+    breakTime: 15, // or 3,
+    availability: {},
+    cancelBeforeHour: 24,
+  });
 
   // On component mount: Fetch events
   useEffect(() => {
@@ -188,7 +200,10 @@ const CalendarProvider = ({ children, user }) => {
   return (
     <CalendarContext.Provider
       value={{
+        // provider props
         user,
+        // provider state
+        configurations,
         // Reducer state
         calendarStore: store,
         calendarDispatch: dispatch,
