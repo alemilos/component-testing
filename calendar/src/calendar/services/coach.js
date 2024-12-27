@@ -5,11 +5,11 @@ import { api } from "../api";
 
 export const coachServices = {
   addEvent: async function (data) {
-    const { dateRange, timeRange } = data;
+    const { date, timeRange } = data;
     const event = {
       id: uuidv4(),
-      start: utils.changeDateTime(dateRange.start, timeRange.start),
-      end: utils.changeDateTime(dateRange.end, timeRange.end),
+      start: utils.changeDateTime(date, timeRange.start),
+      end: utils.changeDateTime(date, timeRange.end),
       title: "Blocked",
       type: eventTypes.BLOCKING,
     };
@@ -18,8 +18,7 @@ export const coachServices = {
   },
 
   addRecurrentEvent: async function (data) {
-    const { recurrenceType, recurrenceDurationWeeks, timeRange, dateRange } =
-      data;
+    const { recurrenceType, recurrenceDurationWeeks, timeRange, date } = data;
 
     const event = {
       id: uuidv4(),
@@ -46,7 +45,7 @@ export const coachServices = {
       // TODO
       event.rrule = {
         freq: "monthly",
-        dtstart: utils.formatYearMonthDay(dateRange.start),
+        dtstart: utils.formatYearMonthDay(date),
       };
     }
 

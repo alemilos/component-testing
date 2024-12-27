@@ -81,7 +81,7 @@ export const utils = {
 
   /**
    * Get hours minutes in the format HH:mm from a Date
-   * @param {*} date
+   * @param {Date} date
    * @returns
    */
   formatHoursMinutes(date) {
@@ -94,8 +94,8 @@ export const utils = {
 
   /**
    * Change the time in a given Date
-   * @param {*} date
-   * @param {*} time
+   * @param {Date} date
+   * @param {string} time
    * @returns
    */
   changeDateTime(date, time) {
@@ -103,6 +103,11 @@ export const utils = {
     return new Date(date.setHours(hour, minute, 0));
   },
 
+  /**
+   * Format a date in the format YYYY-MM-dd
+   * @param {Date} date
+   * @returns
+   */
   formatYearMonthDay(date) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
@@ -113,8 +118,8 @@ export const utils = {
 
   /**
    * Calculate duration in HH:mm between HH:mm, HH:mm formatted times
-   * @param {*} start
-   * @param {*} end
+   * @param {string} start
+   * @param {string} end
    * @returns
    */
   calcDuration(start, end) {
@@ -136,5 +141,50 @@ export const utils = {
     else if (unit === "months") weeks = value * 4;
     else if (unit === "years") weeks = value * 52;
     return weeks;
+  },
+
+  /**
+   * Convert a formatted duration such as HH:mm to an integer of minutes
+   * @param {string} duration
+   */
+  hoursMinutesFormatToMinutes(duration) {
+    const [hours, minutes] = duration.split(":");
+    return parseInt(hours) * 60 + parseInt(minutes);
+  },
+
+  /**
+   * Check if 2 dates are the same day and in case they are not, check if their difference is 24h
+   * and both set at 00:00
+   * @param {Date} date1
+   * @param {Date} date2
+   * @returns
+   */
+  isSameDay(date1, date2) {
+    const sameYear = date1.getFullYear() === date2.getFullYear();
+    const sameMonth = date1.getMonth() === date2.getMonth();
+    const sameDay = date1.getDate() === date2.getDate();
+    let bothMidnights, oneDayDiff;
+
+    // Ensure both times are at 00:00
+    if (
+      date1.getHours() === 0 &&
+      date1.getMinutes() === 0 &&
+      date1.getSeconds() === 0 &&
+      date2.getHours() === 0 &&
+      date2.getMinutes() === 0 &&
+      date2.getSeconds() === 0
+    ) {
+      bothMidnights = true;
+    }
+
+    // Calculate the difference in milliseconds
+    const difference = Math.abs(date1 - date2);
+    // Check if the difference is exactly 24 hours in milliseconds
+    oneDayDiff = difference === 24 * 60 * 60 * 1000; // 24 hours * 60 minutes * 60 seconds * 1000 ms
+
+    if (sameYear && sameMonth && sameDay) return true;
+    if (sameYear && sameMonth && oneDayDiff && bothMidnights) return true;
+
+    return false;
   },
 };

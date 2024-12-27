@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // Icons
 import { GoClock } from "react-icons/go";
@@ -13,12 +13,15 @@ import CSelector from "../../ui/input/CSelector";
 import { usePopup } from "../../ui/popup/PopupProvider";
 import { useCalendar } from "../../../Provider";
 import { utils } from "../../../utils";
+import ErrorInfo from "../../info/ErrorInfo";
+import InvalidEventEdit from "./InvalidEventEdit";
 
 const AddEvent = ({ event }) => {
-  const { start, end } = event;
+  let { start, end } = event;
 
   const {
     user,
+    configurations,
     calendarStore,
     calendarDispatch,
     addEventService,
@@ -27,8 +30,14 @@ const AddEvent = ({ event }) => {
 
   const { closePopup } = usePopup();
 
+  // Errors
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  // Recurrence
   const [recurrenceType, setRecurrenceType] = useState(null);
   const [recurrenceDurationWeeks, setRecurrenceDurationWeeks] = useState(12); // default 3 months (4 * 3 weeks)
+
+  // Times
   const [startTime, setStartTime] = useState(utils.formatHoursMinutes(start));
   const [endTime, setEndTime] = useState(utils.formatHoursMinutes(end));
 
@@ -36,7 +45,23 @@ const AddEvent = ({ event }) => {
   if (!(start > Date.now())) return <EventInThePast />;
 
   async function onSaveClick() {
-    // send to backend
+    if (user === "coachee") {
+      let duration = utils.hoursMinutesFormatToMinutes(
+        utils.calcDuration(startTime, endTime)
+      );
+
+      // 1. check the event duration is valid based on the coach configurations
+      if (!configurations.sessionLengths.includes(duration)) {
+        setErrorMessage("Sessions cannot be this long");
+        return;
+      }
+
+      // 2. check if the event can be adjusted better for the coachee
+    }
+
+    // Make sure the error message is cleared
+    setErrorMessage(null);
+
     if (!recurrenceType || recurrenceType === "not-recurrent") {
       await addEvent();
     } else {
@@ -51,9 +76,9 @@ const AddEvent = ({ event }) => {
    */
   async function addEvent() {
     const timeRange = { start: startTime, end: endTime };
-    const dateRange = { start: start, end: end };
+    const date = start;
 
-    const res = await addEventService({ timeRange, dateRange });
+    const res = await addEventService({ timeRange, date });
     console.log("res: ", res);
 
     // Add to UI
@@ -68,14 +93,14 @@ const AddEvent = ({ event }) => {
    */
   async function addRecurrentEvent() {
     const timeRange = { start: startTime, end: endTime };
-    const dateRange = { start: start, end: end };
+    const date = start;
 
     // TODO: make sure the event is only added after the available date
     const res = await addRecurrentEventService({
       recurrenceType,
       recurrenceDurationWeeks,
       timeRange,
-      dateRange,
+      date,
     });
 
     console.log("res: ", res);
@@ -163,7 +188,7 @@ const AddEvent = ({ event }) => {
             />
           </div>
         </div>
-        <div className="flex gap-4 items-center">
+        {/* <div className="flex gap-4 items-center">
           <CSelector
             width={200}
             onChange={onRecurrenceChange}
@@ -181,11 +206,12 @@ const AddEvent = ({ event }) => {
             ]}
           />
 
-          {/* <RecurrenceDurationManager
+          <RecurrenceDurationManager
             recurrenceType={recurrenceType}
             onChange={onRecurrenceDurationChange}
-          /> */}
-        </div>
+          />
+        </div> */}
+        <ErrorInfo message={errorMessage} />
         <div className="w-full flex gap-3 items-center justify-end mt-4">
           <button
             onClick={closePopup}

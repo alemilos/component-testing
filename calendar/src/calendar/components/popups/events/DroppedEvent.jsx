@@ -1,13 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useCalendar } from "../../../Provider";
 import { usePopup } from "../../ui/popup/PopupProvider";
 import SubmitButton from "../../ui/button/SubmitButton";
+import InvalidEventEdit from "./InvalidEventEdit";
 
 const DroppedEvent = ({ eventDropInfo }) => {
+  console.log(eventDropInfo);
   const { revert, oldEvent, event } = eventDropInfo;
   const { user, calendarStore, calendarDispatch, editEventService } =
     useCalendar();
-  const { closePopup } = usePopup();
+  const { openPopup, closePopup } = usePopup();
+
+  // Check if it's valid update
+  useEffect(() => {
+    if (event.start < Date.now()) {
+      openPopup(InvalidEventEdit, { props: { type: "drop" } });
+      revert();
+    }
+  }, []);
 
   function onCancelClick() {
     revert();

@@ -29,6 +29,7 @@ import { default as ResizedEventPopup } from "./components/popups/events/Resized
 
 // Components
 import CalendarHeader from "./components/header/CalendarHeader";
+import { utils } from "./utils";
 
 const CalendarConsumer = () => {
   const { user, calendarStore } = useCalendar();
@@ -65,6 +66,9 @@ const CalendarConsumer = () => {
   }
 
   function onSelect(selectionInfo) {
+    // make sure only 1 day was selected by the user
+    console.log(selectionInfo);
+    if (!utils.isSameDay(selectionInfo.start, selectionInfo.end)) return;
     openPopup(AddEventPopup, { props: { event: selectionInfo } });
   }
 

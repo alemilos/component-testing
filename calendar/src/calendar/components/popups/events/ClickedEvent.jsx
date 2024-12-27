@@ -6,6 +6,7 @@ import { FaRegCalendar } from "react-icons/fa";
 import { utils } from "../../../utils";
 import { CiWarning } from "react-icons/ci";
 import CSelector from "../../ui/input/CSelector";
+import WarningInfo from "../../info/WarningInfo";
 
 const ClickedEvent = ({ event }) => {
   console.log(event._instance.range.start);
@@ -120,10 +121,9 @@ export default ClickedEvent;
 const DeleteRecurrentEvent = ({ onDeleteTypeChange }) => {
   return (
     <div className="flex flex-col gap-3">
-      <div className="bg-[#1acb97]/[.1] rounded-lg flex gap-2 p-2 items-center text-[#1acb97]">
-        <CiWarning className="text-xl " />
-        <p>This is a recurrent event, select the event to delete</p>
-      </div>
+      <WarningInfo
+        message={"This is a recurrent event, select what event to edit"}
+      />
 
       <CSelector
         width={200}

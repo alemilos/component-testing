@@ -1,14 +1,36 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useCalendar } from "../../../Provider";
 import SubmitButton from "../../ui/button/SubmitButton";
 import { usePopup } from "../../ui/popup/PopupProvider";
+import { utils } from "../../../utils";
+import InvalidEventEdit from "./InvalidEventEdit";
 
 const ResizedEvent = ({ eventResizeInfo }) => {
   console.log(eventResizeInfo);
   const { revert, event } = eventResizeInfo;
-  const { user, calendarStore, calendarDispatch, editEventService } =
-    useCalendar();
-  const { closePopup } = usePopup();
+  const {
+    user,
+    configurations,
+    calendarStore,
+    calendarDispatch,
+    editEventService,
+  } = useCalendar();
+  const { openPopup, closePopup } = usePopup();
+
+  useEffect(() => {
+    if (user === "coachee") {
+      let duration = utils.calcDuration(
+        utils.formatHoursMinutes(event.start),
+        utils.formatHoursMinutes(event.end)
+      );
+
+      duration = utils.hoursMinutesFormatToMinutes(duration);
+
+      if (!configurations.sessionLengths.includes(duration)) {
+        openPopup(InvalidEventEdit, { props: { type: "resize" } });
+      }
+    }
+  }, []);
 
   function onCancelClick() {
     revert();
