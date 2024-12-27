@@ -14,6 +14,24 @@ export const coacheeServices = {
       type: eventTypes.APPOINTMENT,
     };
 
-    return { data: await api.post(event), event };
+    const res = await api.post(event);
+    if (res.ok) return { ok: true, data: res.data, event };
+    return { ok: false, err: res.err, event };
+  },
+
+  deleteEvent: async function (data) {
+    const { event } = data;
+
+    const res = await api.post("Test delete");
+    if (res.ok) return { ok: true, data: res.data, event };
+    return { ok: false, err: res.err, event };
+  },
+
+  editEvent: async function (data) {
+    const { event } = data;
+
+    const res = await api.post("test edit");
+    if (res.ok) return { ok: true, data: res.data, event };
+    return { ok: false, err: res.err, event };
   },
 };

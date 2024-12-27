@@ -23,36 +23,37 @@ const ClickedEvent = ({ event }) => {
   }
 
   async function deleteOne() {
-    console.log("DELETING");
     const res = await deleteEventService(event);
-
-    // Todo: dispatch when res
-    if (event.extendedProps?.isRecurrent) {
-      calendarDispatch({
-        type: "DEL_REC_EVENT",
-        payload: { event, type: "this-event" },
-      });
-    } else {
-      calendarDispatch({ type: "DEL_EVENT", payload: { event } });
+    if (res.ok) {
+      if (event.extendedProps?.isRecurrent) {
+        calendarDispatch({
+          type: "DEL_REC_EVENT",
+          payload: { event, type: "this-event" },
+        });
+      } else {
+        calendarDispatch({ type: "DEL_EVENT", payload: { event } });
+      }
     }
   }
 
   async function deleteAll() {
     const res = await deleteEventService(event);
-    // Todo: dispatch when res
-    calendarDispatch({
-      type: "DEL_REC_EVENT",
-      payload: { event, type: deleteType },
-    });
+    if (res.ok) {
+      calendarDispatch({
+        type: "DEL_REC_EVENT",
+        payload: { event, type: deleteType },
+      });
+    }
   }
 
   async function deleteThisAndFollowing() {
     const res = await deleteEventService(event);
-    // Todo: dispatch when res
-    calendarDispatch({
-      type: "DEL_REC_EVENT",
-      payload: { event, type: deleteType },
-    });
+    if (res.ok) {
+      calendarDispatch({
+        type: "DEL_REC_EVENT",
+        payload: { event, type: deleteType },
+      });
+    }
   }
 
   async function onConfirmClick() {

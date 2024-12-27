@@ -26,10 +26,19 @@ async function simulateGetEvents() {
   console.log("events found: ", events);
 }
 
-function simulator(something) {
+function simulator() {
   return new Promise((res, rej) => {
     setTimeout(() => {
-      res(something);
+      const success = simulateSuccessFailure(0.5);
+      if (!success) alert("simulate request failed");
+      res({ ok: success });
     }, 1000);
   });
+}
+
+// TODO: make a request function that returns
+// {ok: true/false, data: res.data (if success), err: catched error (if failure)}
+
+function simulateSuccessFailure(successRate) {
+  return Math.random() <= successRate;
 }

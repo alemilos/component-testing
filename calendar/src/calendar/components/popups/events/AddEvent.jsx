@@ -79,13 +79,13 @@ const AddEvent = ({ event }) => {
     const date = start;
 
     const res = await addEventService({ timeRange, date });
-    console.log("res: ", res);
 
-    // Add to UI
-    calendarDispatch({
-      type: "ADD_EVENT",
-      payload: res.event,
-    });
+    if (res.ok) {
+      calendarDispatch({
+        type: "ADD_EVENT",
+        payload: res.event,
+      });
+    }
   }
 
   /**

@@ -6,7 +6,6 @@ import { utils } from "../../../utils";
 import InvalidEventEdit from "./InvalidEventEdit";
 
 const ResizedEvent = ({ eventResizeInfo }) => {
-  console.log(eventResizeInfo);
   const { revert, event } = eventResizeInfo;
   const {
     user,
@@ -27,7 +26,10 @@ const ResizedEvent = ({ eventResizeInfo }) => {
       duration = utils.hoursMinutesFormatToMinutes(duration);
 
       if (!configurations.sessionLengths.includes(duration)) {
-        openPopup(InvalidEventEdit, { props: { type: "resize" } });
+        openPopup(InvalidEventEdit, {
+          props: { type: "resize" },
+          onClose: () => revert(),
+        });
       }
     }
   }, []);
@@ -36,11 +38,14 @@ const ResizedEvent = ({ eventResizeInfo }) => {
     revert();
     closePopup();
   }
+
   async function onConfirmClick() {
     const res = await editEventService(event);
 
-    // TODO: on res ok dispatch
-    calendarDispatch({ type: "EDIT_EVENT", payload: { event } });
+    if (res.ok) {
+      calendarDispatch({ type: "EDIT_EVENT", payload: { event } });
+    } else revert();
+
     closePopup();
   }
 

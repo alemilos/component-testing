@@ -5,7 +5,6 @@ import SubmitButton from "../../ui/button/SubmitButton";
 import InvalidEventEdit from "./InvalidEventEdit";
 
 const DroppedEvent = ({ eventDropInfo }) => {
-  console.log(eventDropInfo);
   const { revert, oldEvent, event } = eventDropInfo;
   const { user, calendarStore, calendarDispatch, editEventService } =
     useCalendar();
@@ -26,8 +25,9 @@ const DroppedEvent = ({ eventDropInfo }) => {
 
   async function onConfirmClick() {
     const res = await editEventService(event);
-    console.log(res);
-    calendarDispatch({ type: "EDIT_EVENT", payload: { event } });
+    if (res.ok) {
+      calendarDispatch({ type: "EDIT_EVENT", payload: { event } });
+    } else revert();
 
     closePopup();
   }

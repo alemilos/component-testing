@@ -152,6 +152,7 @@ const CalendarProvider = ({ children, user }) => {
     cancelBeforeHour: 24,
   });
 
+  console.log("store changed: ", store);
   // On component mount: Fetch events
   useEffect(() => {
     async function fetchEventsOnMount() {
@@ -175,14 +176,16 @@ const CalendarProvider = ({ children, user }) => {
 
   async function syncWithGoogleService() {
     dispatch({ type: "LOADING_START" });
-    await services.google();
+    const res = await services.google();
     dispatch({ type: "LOADING_END" });
+    return res;
   }
 
   async function syncWithAppleService() {
     dispatch({ type: "LOADING_START" });
-    await services.apple();
+    const res = await services.apple();
     dispatch({ type: "LOADING_END" });
+    return res;
   }
 
   async function addEventService(data) {
@@ -201,14 +204,16 @@ const CalendarProvider = ({ children, user }) => {
 
   async function editEventService(event) {
     dispatch({ type: "LOADING_START" });
-    await services.post(event);
+    const res = await services.editEvent(event);
     dispatch({ type: "LOADING_END" });
+    return res;
   }
 
   async function deleteEventService(event) {
     dispatch({ type: "LOADING_START" });
-    await services.deleteEvent(event);
+    const res = await services.deleteEvent(event);
     dispatch({ type: "LOADING_END" });
+    return res;
   }
 
   return (
